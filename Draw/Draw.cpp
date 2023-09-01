@@ -91,9 +91,6 @@ int main() {
 		if (wnd.IsSizeChanged()) {
 			OnPaint();
 		}
-		if (wnd.IsSizeChanged()) {
-			OnPaint();
-		}
 		ExMessage me;
 		if (wnd.Peek_Message(&me)) {
 			OnMessage(me);
