@@ -19,6 +19,18 @@
     <Filter Include="UI\HiEasyX">
       <UniqueIdentifier>{00028f4a-ebd1-469b-8852-a107ff1dfd6a}</UniqueIdentifier>
     </Filter>
+    <Filter Include="NewFilter1">
+      <UniqueIdentifier>{daf82bae-0d49-41aa-9f70-6db1522ed397}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="DrawDef">
+      <UniqueIdentifier>{525bdb5e-4bc4-4894-982f-e38076b358c1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="DrawSave">
+      <UniqueIdentifier>{bbe31863-67a4-40b9-bd3c-5a5d944d5193}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Lood">
+      <UniqueIdentifier>{3afad06b-b94e-4687-ab19-7b193a49696a}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Draw.cpp">
@@ -104,6 +116,9 @@
     </ClCompile>
     <ClCompile Include="HiEasyX\HiWindow.cpp">
       <Filter>UI\HiEasyX</Filter>
+    </ClCompile>
+    <ClCompile Include="DrawSave.cpp">
+      <Filter>DrawSave</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -202,6 +217,12 @@
     </ClInclude>
     <ClInclude Include="HiEasyX\HiWindow.h">
       <Filter>UI\HiEasyX</Filter>
+    </ClInclude>
+    <ClInclude Include="DrawDef.h">
+      <Filter>DrawDef</Filter>
+    </ClInclude>
+    <ClInclude Include="DrawSave.h">
+      <Filter>DrawSave</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
