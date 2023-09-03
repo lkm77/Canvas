@@ -33,7 +33,7 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Draw.cpp">
+    <ClCompile Include="DrawMain.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="HiEasyX\HiCanvas.cpp">
