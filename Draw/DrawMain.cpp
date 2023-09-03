@@ -76,10 +76,8 @@ void OnMessage(const ExMessage& me) {
 		break;
 	case WM_RBUTTONDOWN:
 		canvas.Clear();
-		for (auto& ti : revocation) {
-			renew.push_back(std::move(ti));
-		}
 		revocation.clear();
+		renew.clear();
 		break;
 	case WM_MOUSEMOVE:
 	{
