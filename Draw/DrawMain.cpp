@@ -1,5 +1,7 @@
 #include "HiEasyX.h"
-#include "DrawSave.h"
+#include "DrawFile.h"
+#include "DrawFactory.h"
+#include "resource.h"
 const std::wstring wndTitle=L"绘图";
 
 hiex::Window* drawWndPointer;
@@ -7,73 +9,110 @@ hiex::Canvas canvas;
 
 //用于撤销
 //存储需要绘制的内容
-std::vector<std::vector<POINT>>revocation;
+std::vector<Draw::DrawBaseUPtr>revocation;
 //用于恢复
 //存储被撤销的内容
-std::vector<std::vector<POINT>>renew;
-
+std::vector<Draw::DrawBaseUPtr>renew;
+DrawFile drFi;
 bool isLbuttonDown = false;
-bool isCtrlDown = false;
 void OnPaint() {
 	//canvas.Clear();
 	for (auto& ti : revocation) {
-		canvas.Polyline(ti.data(), ti.size(), true, RGB(0, 0, 0));
+		ti->ReDraw(canvas);
 	}
 }
 void OnChar(TCHAR ch) {
 	switch (ch)
 	{
 		case (TCHAR)('z'-96) :
-		//处理Ctrl+z键(撤销)
-		if (isCtrlDown && revocation.size()) {
-			canvas.Clear();
-			renew.push_back(std::move(revocation.back()));
-			revocation.pop_back();
-			OnPaint();
-		}
 		break;
 	case (TCHAR)('y' - 96) :
-		//处理Ctrl+y键(恢复)
-		if (isCtrlDown && renew.size()) {
-			revocation.push_back(std::move(renew.back()));
-			renew.pop_back();
-			OnPaint();
-		}
 		break;
 		case (TCHAR)('s' - 96) :{
-			//处理Ctrl+s键(保存)
-			hiex::Window saveWnd;
-			saveWnd.PreSetPos(
-				(drawWndPointer->GetPos().x + drawWndPointer->GetClientWidth() - 100) / 2,
-				(drawWndPointer->GetPos().y + drawWndPointer->GetClientHeight() - 200) / 2
-			);
-			saveWnd.InitWindow(200, 100, 0, L"保存", nullptr, drawWndPointer->GetHandle());
-			hiex::Canvas saveCanvas;
-			saveWnd.BindCanvas(&saveCanvas);
-			EnableSystemMenu(saveWnd.GetHandle(), false);
-			EnableResizing(saveWnd.GetHandle(), false);
-			DrawSave drawSave;
-			drawSave.Save(L"save.txt", revocation);
-			while (drawSave.IsSave()) {
-				saveCanvas.CenterText(L"保存中,请稍后...");
-				saveWnd.Redraw();
-				hiex::DelayFPS(60);
-			}
-			saveWnd.CloseWindow();
 		}
 			break;
 	default:
 		break;
 	}
 }
-void OnMessage(const ExMessage& me) {
-	switch (me.message)
+void OnMenu(WPARAM wParam) {
+	switch (LOWORD(wParam))
 	{
-	case WM_LBUTTONDOWN:
-		isLbuttonDown = true;
-		if (revocation.empty() || revocation.back().size())
-			revocation.push_back(std::vector<POINT>());
+	case ID_Redo:
+		//处理Ctrl+y键(恢复)
+		if (renew.size()) {
+		revocation.push_back(std::move(renew.back()));
+		renew.pop_back();
+		OnPaint();
+		}
 		break;
+	case ID_Revoke:
+		//处理Ctrl+z键(撤销)
+		if (revocation.size()) {
+		canvas.Clear();
+		renew.push_back(std::move(revocation.back()));
+		revocation.pop_back();
+		OnPaint();
+		}
+		break;
+	case ID_Save: {
+
+		//处理Ctrl+s键(保存)
+		hiex::Window saveWnd;
+		saveWnd.PreSetPos(
+			(drawWndPointer->GetPos().x + drawWndPointer->GetClientWidth() - 100) / 2,
+			(drawWndPointer->GetPos().y + drawWndPointer->GetClientHeight() - 200) / 2
+		);
+		saveWnd.InitWindow(200, 100, 0, L"保存", nullptr, drawWndPointer->GetHandle());
+		hiex::Canvas saveCanvas;
+		saveWnd.BindCanvas(&saveCanvas);
+		EnableSystemMenu(saveWnd.GetHandle(), false);
+		EnableResizing(saveWnd.GetHandle(), false);
+		saveCanvas.CenterText(L"保存中,请稍后...");
+		saveWnd.Redraw();
+		drFi.Save(revocation);
+		saveWnd.CloseWindow();
+		break;
+	}
+	case ID_Open: {
+		canvas.Clear();
+		revocation.clear();
+		renew.clear();
+		drFi.Load(revocation);
+		OnPaint();
+		break;
+	}
+	default:
+		break;
+	}
+}
+//加载加速键
+HACCEL haccel = LoadAccelerators(GetModuleHandle(NULL), (wchar_t*)IDR_ACCELERATOR1);
+LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
+{
+	//if(msg!=WM_COMMAND)
+	MSG Msg{};
+	Msg.hwnd = hWnd;
+	Msg.message = msg;
+	Msg.wParam = wParam;
+	Msg.lParam = lParam;
+	//翻译加速键
+	//如果为加速键直接默认处理
+	if(TranslateAccelerator(hWnd, haccel, &Msg))return HIWINDOW_DEFAULT_PROC;
+	switch (msg)
+	{
+	case WM_COMMAND:
+		OnMenu(wParam);
+		break;
+	case WM_LBUTTONDOWN:
+	{
+		isLbuttonDown = true;
+		if (revocation.empty());
+		else if (revocation.back()->IsDraw());
+		else break;
+		revocation.push_back(Draw::DrawFactory(Draw::Line));
+		break;
+	}
 	case WM_RBUTTONDOWN:
 		canvas.Clear();
 		revocation.clear();
@@ -82,48 +121,39 @@ void OnMessage(const ExMessage& me) {
 	case WM_MOUSEMOVE:
 	{
 		if (false == isLbuttonDown)break;
-		POINT po1 = { me.x,me.y };
-		POINT po2 = po1;
-		if (revocation.back().size())po1 = revocation.back().back();
-		canvas.Line(po1, po2, true, RGB(0, 0, 0));
-		revocation.back().push_back(po2);
+		POINT po = { GET_X_LPARAM(lParam),GET_Y_LPARAM(lParam) };
+		if (revocation.back()->GetDrawType() == Draw::Line) {
+			Draw::DrawLine* drLi = (Draw::DrawLine*)revocation.back().get();
+			drLi->AddPoint(canvas, po);
+		}
 		renew.clear();
+		break;
 	}
-	break;
 	case WM_LBUTTONUP:
 		isLbuttonDown = false;
 		break;
-	case WM_KEYDOWN:
-		//判断是否是Ctrl键
-		if (VK_CONTROL == me.vkcode)
-			isCtrlDown = true;
-		break;
-	case WM_KEYUP:
-		//判断是否是Ctrl键
-		if (VK_CONTROL == me.vkcode)
-			isCtrlDown = false;
-		break;
-	case WM_CHAR: {
-		OnChar(me.ch);
+	default:
+		return HIWINDOW_DEFAULT_PROC;	// 标识使用默认消息处理函数继续处理
+
+		// 若要以默认方式处理，请勿使用此语句
+		//return DefWindowProc(hWnd, msg, wParam, lParam);
 		break;
 	}
 
-	default:
-		break;
-	}
+	return 0;
 }
 int main() {
-	hiex::Window drawWnd(1080, 960, 0, wndTitle.c_str());
+	hiex::Window drawWnd(1080, 960, 0, wndTitle.c_str(), WndProc);
+	//设置菜单
+	SetMenu(drawWnd.GetHandle(), LoadMenu(GetModuleHandle(NULL), (wchar_t*)IDR_MENU1));
 	drawWndPointer = &drawWnd;
 	drawWnd.BindCanvas(&canvas);
+	hiex::Canvas ca;
+	ca.Load_Image_Alpha(L"", 0, 0, false, 0, 0, (BYTE)255U, true, true);
 	while (drawWnd.IsAlive())
 	{
 		if (drawWnd.IsSizeChanged()) {
 			OnPaint();
-		}
-		ExMessage me;
-		if (drawWnd.Peek_Message(&me)) {
-			OnMessage(me);
 		}
 		drawWnd.Redraw();
 		hiex::DelayFPS(120);

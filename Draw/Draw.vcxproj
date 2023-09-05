@@ -127,8 +127,11 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="DrawFactory.cpp" />
     <ClCompile Include="DrawMain.cpp" />
-    <ClCompile Include="DrawSave.cpp" />
+    <ClCompile Include="DrawFile.cpp" />
+    <ClCompile Include="Draw\DrawBase.cpp" />
+    <ClCompile Include="Draw\DrawLine.cpp" />
     <ClCompile Include="HiEasyX\HiCanvas.cpp" />
     <ClCompile Include="HiEasyX\HiContainer.cpp" />
     <ClCompile Include="HiEasyX\HiDrawingProperty.cpp" />
@@ -158,8 +161,11 @@
     <ClCompile Include="HiEasyX\HiWindow.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="DrawFactory.h" />
     <ClInclude Include="DrawDef.h" />
-    <ClInclude Include="DrawSave.h" />
+    <ClInclude Include="DrawFile.h" />
+    <ClInclude Include="Draw\DrawBase.h" />
+    <ClInclude Include="Draw\DrawLine.h" />
     <ClInclude Include="HiEasyX.h" />
     <ClInclude Include="HiEasyX\HiCanvas.h" />
     <ClInclude Include="HiEasyX\HiContainer.h" />
@@ -192,6 +198,10 @@
     <ClInclude Include="HiEasyX\HiSysGUI\SysRadioButton.h" />
     <ClInclude Include="HiEasyX\HiSysGUI\SysStatic.h" />
     <ClInclude Include="HiEasyX\HiWindow.h" />
+    <ClInclude Include="resource.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="Draw.rc" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
