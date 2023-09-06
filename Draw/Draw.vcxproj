@@ -131,6 +131,7 @@
     <ClCompile Include="DrawMain.cpp" />
     <ClCompile Include="DrawFile.cpp" />
     <ClCompile Include="Draw\DrawBase.cpp" />
+    <ClCompile Include="Draw\DrawImage.cpp" />
     <ClCompile Include="Draw\DrawLine.cpp" />
     <ClCompile Include="HiEasyX\HiCanvas.cpp" />
     <ClCompile Include="HiEasyX\HiContainer.cpp" />
@@ -165,6 +166,7 @@
     <ClInclude Include="DrawDef.h" />
     <ClInclude Include="DrawFile.h" />
     <ClInclude Include="Draw\DrawBase.h" />
+    <ClInclude Include="Draw\DrawImage.h" />
     <ClInclude Include="Draw\DrawLine.h" />
     <ClInclude Include="HiEasyX.h" />
     <ClInclude Include="HiEasyX\HiCanvas.h" />

@@ -1,5 +1,12 @@
 #include "DrawBase.h"
 namespace Draw {
+	bool operator==(const POINT& po1, const POINT& po2)
+	{
+		if (po1.x != po2.x)return false;
+		if (po1.y != po2.y)return false;
+		return true;
+	}
+	
 	DrawBase::DrawBase()
 	{
 		this->SetDrawType(Base);

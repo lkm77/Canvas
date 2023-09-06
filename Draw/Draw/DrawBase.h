@@ -3,9 +3,10 @@
 #include <fstream>
 //#include <vector>
 namespace Draw {
+	bool operator==(const POINT& po1, const POINT& po2);
 	enum DrawType
 	{
-		Base,Line
+		Base,Line, Image
 	};
 	
 	//typedef unsigned int DrawType;

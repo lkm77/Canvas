@@ -1,14 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <Filter Include="源文件">
-      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
-      <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
-    </Filter>
-    <Filter Include="头文件">
-      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
-      <Extensions>h;hh;hpp;hxx;h++;hm;inl;inc;ipp;xsd</Extensions>
-    </Filter>
     <Filter Include="资源文件">
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
@@ -19,22 +11,35 @@
     <Filter Include="UI\HiEasyX">
       <UniqueIdentifier>{00028f4a-ebd1-469b-8852-a107ff1dfd6a}</UniqueIdentifier>
     </Filter>
-    <Filter Include="NewFilter1">
-      <UniqueIdentifier>{daf82bae-0d49-41aa-9f70-6db1522ed397}</UniqueIdentifier>
-    </Filter>
     <Filter Include="DrawDef">
       <UniqueIdentifier>{525bdb5e-4bc4-4894-982f-e38076b358c1}</UniqueIdentifier>
     </Filter>
-    <Filter Include="DrawSave">
+    <Filter Include="DrawFile">
       <UniqueIdentifier>{bbe31863-67a4-40b9-bd3c-5a5d944d5193}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Lood">
-      <UniqueIdentifier>{3afad06b-b94e-4687-ab19-7b193a49696a}</UniqueIdentifier>
+    <Filter Include="UI\Draw">
+      <UniqueIdentifier>{d62f63ce-5b16-462f-a2e7-edf1bd491eba}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="UI\Draw\DrawBase">
+      <UniqueIdentifier>{d7021098-faa8-43b6-9f2a-8732a7dfa5e8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="UI\Draw\DrawFactory">
+      <UniqueIdentifier>{2e1be416-d7b2-44d3-b237-cd688b4b4286}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="UI\Draw\DrawLine">
+      <UniqueIdentifier>{9573d6db-3ac3-42b3-8d05-4465d9d8895b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Main">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="UI\Draw\DrawImage">
+      <UniqueIdentifier>{5ebfc621-6553-4e40-a612-ff5ebdc81c66}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="DrawMain.cpp">
-      <Filter>源文件</Filter>
+      <Filter>Main</Filter>
     </ClCompile>
     <ClCompile Include="HiEasyX\HiCanvas.cpp">
       <Filter>UI\HiEasyX</Filter>
@@ -117,8 +122,20 @@
     <ClCompile Include="HiEasyX\HiWindow.cpp">
       <Filter>UI\HiEasyX</Filter>
     </ClCompile>
-    <ClCompile Include="DrawSave.cpp">
-      <Filter>DrawSave</Filter>
+    <ClCompile Include="DrawFile.cpp">
+      <Filter>DrawFile</Filter>
+    </ClCompile>
+    <ClCompile Include="Draw\DrawBase.cpp">
+      <Filter>UI\Draw\DrawBase</Filter>
+    </ClCompile>
+    <ClCompile Include="Draw\DrawLine.cpp">
+      <Filter>UI\Draw\DrawLine</Filter>
+    </ClCompile>
+    <ClCompile Include="DrawFactory.cpp">
+      <Filter>UI\Draw\DrawFactory</Filter>
+    </ClCompile>
+    <ClCompile Include="Draw\DrawImage.cpp">
+      <Filter>UI\Draw\DrawImage</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -221,8 +238,28 @@
     <ClInclude Include="DrawDef.h">
       <Filter>DrawDef</Filter>
     </ClInclude>
-    <ClInclude Include="DrawSave.h">
-      <Filter>DrawSave</Filter>
+    <ClInclude Include="DrawFile.h">
+      <Filter>DrawFile</Filter>
     </ClInclude>
+    <ClInclude Include="Draw\DrawBase.h">
+      <Filter>UI\Draw\DrawBase</Filter>
+    </ClInclude>
+    <ClInclude Include="Draw\DrawLine.h">
+      <Filter>UI\Draw\DrawLine</Filter>
+    </ClInclude>
+    <ClInclude Include="DrawFactory.h">
+      <Filter>UI\Draw\DrawFactory</Filter>
+    </ClInclude>
+    <ClInclude Include="resource.h">
+      <Filter>资源文件</Filter>
+    </ClInclude>
+    <ClInclude Include="Draw\DrawImage.h">
+      <Filter>UI\Draw\DrawImage</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="Draw.rc">
+      <Filter>资源文件</Filter>
+    </ResourceCompile>
   </ItemGroup>
 </Project>

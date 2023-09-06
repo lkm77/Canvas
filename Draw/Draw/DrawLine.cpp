@@ -16,6 +16,7 @@ namespace Draw {
 
 		POINT po2;
 		if (this->vecPo.empty())po2 = po;
+		else if (this->vecPo.back() == po)return;
 		else po2 = this->vecPo.back();
 		canvas.Line(po, po2, true, this->GetLineColor());
 		this->vecPo.push_back(po);

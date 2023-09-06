@@ -9,6 +9,9 @@ namespace Draw {
 		case Draw::Line:
 			drBaUPtr.reset(new DrawLine);
 			break;
+		case Draw::Image:
+			drBaUPtr.reset(new DrawImage);
+			break;
 		default:
 			break;
 		}

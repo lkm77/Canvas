@@ -13,26 +13,17 @@ std::vector<Draw::DrawBaseUPtr>revocation;
 //用于恢复
 //存储被撤销的内容
 std::vector<Draw::DrawBaseUPtr>renew;
+//用于存储背景
+std::vector<Draw::DrawBaseUPtr>background;
 DrawFile drFi;
 bool isLbuttonDown = false;
 void OnPaint() {
 	//canvas.Clear();
-	for (auto& ti : revocation) {
+	for (auto& ti : background) {
 		ti->ReDraw(canvas);
 	}
-}
-void OnChar(TCHAR ch) {
-	switch (ch)
-	{
-		case (TCHAR)('z'-96) :
-		break;
-	case (TCHAR)('y' - 96) :
-		break;
-		case (TCHAR)('s' - 96) :{
-		}
-			break;
-	default:
-		break;
+	for (auto& ti : revocation) {
+		ti->ReDraw(canvas);
 	}
 }
 void OnMenu(WPARAM wParam) {
@@ -56,30 +47,32 @@ void OnMenu(WPARAM wParam) {
 		}
 		break;
 	case ID_Save: {
-
 		//处理Ctrl+s键(保存)
-		hiex::Window saveWnd;
-		saveWnd.PreSetPos(
-			(drawWndPointer->GetPos().x + drawWndPointer->GetClientWidth() - 100) / 2,
-			(drawWndPointer->GetPos().y + drawWndPointer->GetClientHeight() - 200) / 2
-		);
-		saveWnd.InitWindow(200, 100, 0, L"保存", nullptr, drawWndPointer->GetHandle());
-		hiex::Canvas saveCanvas;
-		saveWnd.BindCanvas(&saveCanvas);
-		EnableSystemMenu(saveWnd.GetHandle(), false);
-		EnableResizing(saveWnd.GetHandle(), false);
-		saveCanvas.CenterText(L"保存中,请稍后...");
-		saveWnd.Redraw();
-		drFi.Save(revocation);
-		saveWnd.CloseWindow();
+		drFi.Save(*drawWndPointer,revocation);
 		break;
 	}
 	case ID_Open: {
-		canvas.Clear();
-		revocation.clear();
-		renew.clear();
-		drFi.Load(revocation);
-		OnPaint();
+		if (MessageBox(NULL, L"是否打开,未保存内容将丢失", L"打开", MB_YESNO| MB_ICONWARNING) == IDYES) {
+			canvas.Clear();
+			revocation.clear();
+			renew.clear();
+			background.clear();
+			drFi.Load(*drawWndPointer, background);
+			OnPaint();
+		}
+		break;
+	}
+	case ID_SaveAs: {
+		drFi.SaveAS(*drawWndPointer, revocation);
+		break;
+	}
+	case ID_NewBuilt: {
+		if (MessageBox(NULL, L"是否新建,未保存内容将丢失", L"新建", MB_YESNO| MB_ICONWARNING) == IDYES) {
+			canvas.Clear();
+			revocation.clear();
+			renew.clear();
+			background.clear();
+		}
 		break;
 	}
 	default:
@@ -134,9 +127,6 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 		break;
 	default:
 		return HIWINDOW_DEFAULT_PROC;	// 标识使用默认消息处理函数继续处理
-
-		// 若要以默认方式处理，请勿使用此语句
-		//return DefWindowProc(hWnd, msg, wParam, lParam);
 		break;
 	}
 
@@ -148,8 +138,6 @@ int main() {
 	SetMenu(drawWnd.GetHandle(), LoadMenu(GetModuleHandle(NULL), (wchar_t*)IDR_MENU1));
 	drawWndPointer = &drawWnd;
 	drawWnd.BindCanvas(&canvas);
-	hiex::Canvas ca;
-	ca.Load_Image_Alpha(L"", 0, 0, false, 0, 0, (BYTE)255U, true, true);
 	while (drawWnd.IsAlive())
 	{
 		if (drawWnd.IsSizeChanged()) {
