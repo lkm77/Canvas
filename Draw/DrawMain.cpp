@@ -146,6 +146,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 		canvas.Clear();
 		revocation.clear();
 		renew.clear();
+		if (backgroundImage)backgroundImage->ReDraw(canvas);
 		if (drawWndPointer)drawWndPointer->Redraw();
 		break;
 	case WM_MOUSEMOVE:
