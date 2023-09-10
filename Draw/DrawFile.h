@@ -7,7 +7,7 @@
 #include "DrawDef.h"
 #include "DrawFactory.h"
 enum FileType {
-	Image, Folder, DrawData,other
+	Image, Folder, other
 };
 class FileInfo {
 public:
@@ -29,11 +29,10 @@ private:
 	int extenSel = -1;
 };
 //支持的文件格式
-const int fileFormatNumber = 4;
+const int fileFormatNumber = 3;
 const std::wstring fileFormat[fileFormatNumber] = {
-		L"DrawData",
-		L"jpg",
 		L"png",
+		L"jpg",
 		L"bmp"
 };
 //用于保存与加载绘图数据
@@ -43,17 +42,14 @@ public:
 	DrawFile();
 	~DrawFile();
 	//保存
-	void Save(hiex::Window& wnd, const std::vector<Draw::DrawBaseUPtr>& veDrBa, FileInfo* savePath=nullptr);
-	//另存为
-	void SaveAS(hiex::Window& wnd, const std::vector<Draw::DrawBaseUPtr>& veDrBa);
+	void Save(hiex::Window& wnd, bool isSaveAS = false);
 	//加载
-	void Load(hiex::Window& wnd, std::vector<Draw::DrawBaseUPtr>& veDrBa);
+	bool Load(hiex::Window& wnd, Draw::DrawImageUPtr& drIm);
+	bool Load(std::wstring path, Draw::DrawImageUPtr& drIm);
 private:
 	hiex::Window CreateFileWindow(hiex::Window& wnd, std::wstring title);
-	void SaveDrawData(std::wofstream& out, const std::vector<Draw::DrawBaseUPtr>& veDrBa);
 	void SaveDrawImage(std::wstring path, IMAGE* image);
-	void LoadDrawData(FileInfo FiIn, std::vector<Draw::DrawBaseUPtr>& veDrBa);
-	void LoadDrawImage(FileInfo FiIn, std::vector<Draw::DrawBaseUPtr>& veDrBa);
+	bool LoadDrawImage(FileInfo FiIn, Draw::DrawImageUPtr& drIm);
 
 	bool GetLoadFileInfo(hiex::Window& wnd, FileInfo& loadPath);
 	bool GetSavePath(hiex::Window& wnd, FileInfo& savePath);
@@ -61,7 +57,5 @@ private:
 	std::wstring GetFolderPath();
 private:
 	FileInfo savePath;
-	//hiex::Window saveWnd;
-	//hiex::Window loadWnd;
 };
 

@@ -19,19 +19,14 @@ namespace Draw {
 		COLORREF GetLineColor();
 		COLORREF GetFillColor();
 		COLORREF GetBackgroundColor();
-		void SetLineColor(COLORREF lineColor = RGB(0, 0, 0));
-		void SetFillColor(COLORREF fillColor = RGB(0, 0, 0));
-		void SetBackgroundColor(COLORREF backgroundColor = RGB(0, 0, 0));
+		void SetLineColor(COLORREF lineColor = SET_ALPHA(RGB(0, 0, 0), 255));
+		void SetFillColor(COLORREF fillColor = SET_ALPHA(RGB(0, 0, 0), 255));
+		void SetBackgroundColor(COLORREF backgroundColor = SET_ALPHA(RGB(0, 0, 0), 255));
 
 		virtual bool IsDraw() = 0;
 		virtual void ReDraw(hiex::Canvas& canvas) = 0;
-		void Save(std::wofstream& out);
-		void Load(std::wifstream& in);
 	protected:
 		void SetDrawType(DrawType drawType);
-		virtual void SaveData(std::wofstream& out) = 0;
-		virtual void LoadData(std::wifstream& in) = 0;
-	//protected:
 	private:
 		DrawType drawType;
 		COLORREF lineColor;

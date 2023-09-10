@@ -18,30 +18,14 @@ namespace Draw {
 		if (this->vecPo.empty())po2 = po;
 		else if (this->vecPo.back() == po)return;
 		else po2 = this->vecPo.back();
-		canvas.Line(po, po2, true, this->GetLineColor());
+		canvas.GP_Line(po.x, po.y, po2.x, po2.y, true, this->GetLineColor());
 		this->vecPo.push_back(po);
 	}
 	void DrawLine::ReDraw(hiex::Canvas& canvas)
 	{
-		canvas.Polyline(this->vecPo.data(), this->vecPo.size(), true, this->GetLineColor());
-	}
-	void DrawLine::SaveData(std::wofstream& out)
-	{
-		out << vecPo.size() << " ";
-		for (auto& po : this->vecPo)
+		for (size_t i = 1; i < this->vecPo.size(); i++)
 		{
-			out << po.x << " " << po.y << " ";
-		}
-	}
-	void DrawLine::LoadData(std::wifstream& in)
-	{
-		size_t size;
-		in >> size;
-		POINT po{};
-		for (size_t i = 0; i < size; i++)
-		{
-			in >> po.x >> po.y;
-			this->vecPo.push_back(po);
+			canvas.GP_Line(vecPo[i - 1].x, vecPo[i - 1].y, vecPo[i].x, vecPo[i].y, true, this->GetLineColor());
 		}
 	}
 }

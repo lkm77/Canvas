@@ -3,23 +3,25 @@
 namespace Draw {
 	bool DrawImage::IsDraw()
 	{
-		return this->image.getheight() || this->image.getwidth();
+		return this->image->getwidth() && this->image->getheight();
 	}
 	void DrawImage::ReDraw(hiex::Canvas& canvas)
 	{
 		canvas.PutImageIn_Alpha(
 			0, 0,
-			&this->image
+			this->image.get(),
+			{ (0) },
+			(BYTE)255U,
+			true,
+			true
 		);
 	}
-	void DrawImage::SetImage(IMAGE& image)
+	void DrawImage::SetImage(ImageUPtr& image)
 	{
-		this->image = image;
+		this->image.reset(image.release());
 	}
-	void DrawImage::SaveData(std::wofstream& out)
+	void DrawImage::RemoveImage()
 	{
-	}
-	void DrawImage::LoadData(std::wifstream& in)
-	{
+		this->image.release();
 	}
 }

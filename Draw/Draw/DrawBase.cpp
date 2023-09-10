@@ -45,28 +45,6 @@ namespace Draw {
 	{
 		this->backgroundColor = backgroundColor;
 	}
-	void DrawBase::Save(std::wofstream& out)
-	{
-		out << this->GetDrawType() << " ";
-		out << this->GetLineColor() << " ";
-		out << this->GetFillColor() << " ";
-		out << this->GetBackgroundColor() << " ";
-		this->SaveData(out);
-	}
-	void DrawBase::Load(std::wifstream& in)
-	{
-		//不处理类型,外部需要根据类型构造类
-		COLORREF liCo;
-		in >> liCo;
-		this->SetLineColor(liCo);
-		COLORREF fiCo;
-		in >> fiCo;
-		this->SetFillColor(fiCo);
-		COLORREF baCo;
-		in >> baCo;
-		this->SetBackgroundColor(baCo);
-		this->LoadData(in);
-	}
 	void DrawBase::SetDrawType(DrawType drawType)
 	{
 		this->drawType = drawType;

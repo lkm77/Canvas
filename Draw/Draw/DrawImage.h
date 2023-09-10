@@ -2,6 +2,7 @@
 #include "DrawBase.h"
 
 namespace Draw {
+	typedef std::unique_ptr <IMAGE> ImageUPtr;
 	class DrawImage :
 		public DrawBase
 	{
@@ -10,12 +11,11 @@ namespace Draw {
 		bool IsDraw() override;
 		void ReDraw(hiex::Canvas& canvas) override;
 		//设置图像
-		void SetImage(IMAGE& image);
+		void SetImage(ImageUPtr& image);
+		void RemoveImage();
 	private:
-		IMAGE image;
-	private:
-		void SaveData(std::wofstream& out) override;//无用
-		void LoadData(std::wifstream& in) override;//无用
+		ImageUPtr image;
 	};
+	typedef std::unique_ptr <DrawImage> DrawImageUPtr;
 }
 

@@ -31,8 +31,8 @@ int FileInfo::GetExtenSel()
 }
 FileType FileInfo::GetFileType()
 {
-	if (this->exten == L"DrawData")return DrawData;
-	else return Image;
+	if (this->exten == L"")return other;
+	return Image;
 }
 bool FileInfo::SetNameAndExten(std::wstring name)
 {
@@ -85,84 +85,48 @@ DrawFile::DrawFile()
 DrawFile::~DrawFile()
 {
 }
-void DrawFile::Save(hiex::Window& wnd, const std::vector<Draw::DrawBaseUPtr>& veDrBa, FileInfo* savePath)
+void DrawFile::Save(hiex::Window& wnd, bool isSaveAS)
 {
 	FileInfo saPa;
-	if (savePath)saPa = *savePath;
-	else if (this->savePath.IsEffective())saPa = this->savePath;
-	else
-	{
-
-		if (this->GetSavePath(wnd, saPa));
-		else return;
-	}
-	if (!saPa.IsEffective()) {
-		MessageBox(NULL, L"保存路径为空", L"保存路径错误", MB_YESNO | MB_ICONERROR);
-		return;
-	}
-	if (saPa.GetFileType() == Image)
-	{
-		this->SaveDrawImage(saPa.GetPath(), wnd.GetImage());
-		return;
-	}
-	std::wofstream out(saPa.GetPath());
-	out << DrawVersion << std::endl;
-	this->SaveDrawData(out, veDrBa);
-}
-void DrawFile::SaveAS(hiex::Window& wnd, const std::vector<Draw::DrawBaseUPtr>& veDrBa)
-{
-	FileInfo saPa;
-	if(!this->GetSavePath(wnd, saPa))return;
-	Save(wnd, veDrBa, &saPa);
-}
-void DrawFile::SaveDrawData(std::wofstream& out, const std::vector<Draw::DrawBaseUPtr>& veDrBa)
-{
-	for (auto& drBa : veDrBa)
-	{
-		drBa->Save(out);
-		out << std::endl;
-	}
+	if (!isSaveAS && this->savePath.IsEffective())saPa = this->savePath;
+	else if (this->GetSavePath(wnd, saPa))this->savePath = saPa;
+	else return;
+	if (!saPa.IsEffective()) MessageBox(NULL, L"保存路径无效", L"保存错误", MB_YESNO | MB_ICONERROR);
+	else this->SaveDrawImage(saPa.GetPath(), wnd.GetImage());
+	return;
 }
 void DrawFile::SaveDrawImage(std::wstring path, IMAGE* image)
 {
 	saveimage(path.c_str(), image);
 }
-void DrawFile::Load(hiex::Window& wnd, std::vector<Draw::DrawBaseUPtr>& veDrBa)
+bool DrawFile::Load(hiex::Window& wnd, Draw::DrawImageUPtr& drIm)
 {
 	FileInfo FiIn;
-	this->GetLoadFileInfo(wnd, FiIn);
-	if (FiIn.GetFileType() == DrawData)this->LoadDrawData(FiIn, veDrBa);
-	else if (FiIn.GetFileType() == Image)this->LoadDrawImage(FiIn, veDrBa);
-}
-void DrawFile::LoadDrawData(FileInfo FiIn, std::vector<Draw::DrawBaseUPtr>& veDrBa)
-{
-	std::wifstream in(FiIn.GetPath());
-	std::wstring DrawVersion;
-	in >> DrawVersion;//暂时没用
-	int DrTy = 0;
-	while (in >> DrTy)
-	{
-		Draw::DrawBaseUPtr DrBa = Draw::DrawFactory(Draw::DrawType(DrTy));
-		DrBa->Load(in);
-		veDrBa.push_back(std::move(DrBa));
-	}
+	if (!this->GetLoadFileInfo(wnd, FiIn))return false;
+	if(!FiIn.IsEffective())MessageBox(NULL, L"加载路径无效", L"加载错误", MB_YESNO | MB_ICONERROR);
 
+	else if(this->LoadDrawImage(FiIn, drIm))return true;
+	else MessageBox(NULL, L"加载文件错误", L"加载错误", MB_YESNO | MB_ICONERROR);
+	return false;
 }
-void DrawFile::LoadDrawImage(FileInfo FiIn, std::vector<Draw::DrawBaseUPtr>& veDrBa)
+bool DrawFile::Load(std::wstring path, Draw::DrawImageUPtr& drIm)
+{
+	FileInfo FiIn;
+	FiIn.SetPath(path);
+	if (!FiIn.IsEffective())MessageBox(NULL, L"加载路径无效", L"加载错误", MB_YESNO | MB_ICONERROR);
+
+	else if (this->LoadDrawImage(FiIn, drIm))return true;
+	else MessageBox(NULL, L"加载文件错误", L"加载错误", MB_YESNO | MB_ICONERROR);
+	return false;
+}
+bool DrawFile::LoadDrawImage(FileInfo FiIn, Draw::DrawImageUPtr& drIm)
 {
 	hiex::Canvas ca;
-	IMAGE im = ca.Load_Image_Alpha(
-		FiIn.GetPath().c_str(),
-		0, 0,
-		false,
-		0, 0,
-		(BYTE)255U,
-		true, true
-	);
-	Draw::DrawBaseUPtr DrBa = Draw::DrawFactory(Draw::Image);
-	Draw::DrawImage* DrIm = (Draw::DrawImage*)DrBa.get();
-	DrIm->SetImage(im);
-	veDrBa.push_back(std::move(DrBa));
+	Draw::ImageUPtr im(new IMAGE);
+	loadimage(im.get(), FiIn.GetPath().c_str());
+	if (!(im->getwidth() && im->getheight()))return false;
+	drIm->SetImage(im);
+	return true;
 }
 
 bool DrawFile::GetLoadFileInfo(hiex::Window& wnd, FileInfo& loadPath)
@@ -185,7 +149,7 @@ hiex::Window DrawFile::CreateFileWindow(hiex::Window& wnd, std::wstring title)
 bool DrawFile::GetSavePath(hiex::Window& wnd, FileInfo& savePath)
 {
 	FileInfo saPa;
-	saPa.SetPath(L"C:\\1.DrawData");
+	saPa.SetPath(L"C:\\1.png");
 	hiex::Window saveWnd = this->CreateFileWindow(wnd, L"Save");
 	hiex::Canvas ca;
 	saveWnd.BindCanvas(&ca);
@@ -230,9 +194,11 @@ bool DrawFile::GetSavePath(hiex::Window& wnd, FileInfo& savePath)
 			}
 		}
 		if (folder.IsClicked()) {
+			folder.Enable(false);
 			if (saPa.SetParentPath(this->GetFolderPath()))
 				pathEdit.SetText(saPa.GetPath());
 			BringWindowToTop(saveWnd.GetHandle());
+			folder.Enable(true);
 		}
 		if (pathEdit.IsEdited()) {
 			std::wstring path = pathEdit.GetText();
@@ -267,7 +233,7 @@ std::wstring DrawFile::GetFileInfo()
 	ofn.lStructSize = sizeof(OPENFILENAME);	//结构体大小
 	ofn.hwndOwner = NULL;					//拥有着窗口句柄
 	//格式 名字+过滤规则
-	ofn.lpstrFilter = TEXT("DrawData\0*.DrawData\0jpg\0*.jpg\0bmp\0*.bmp\0png\0*.png\0\0");	//设置过滤
+	ofn.lpstrFilter = TEXT("png\0*.png\0jpg\0*.jpg\0bmp\0*.bmp\0\0");	//设置过滤
 	ofn.nFilterIndex = 1;	//过滤器索引
 	ofn.lpstrFile = strFileName;	//接收返回的文件名，注意第一个字符需要为NULL
 	ofn.nMaxFile = sizeof(strFileName);	//缓冲区长度
