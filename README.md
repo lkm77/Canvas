@@ -1,4 +1,4 @@
-# Draw
+# Canvas
 
 ![release](https://img.shields.io/github/v/release/lkm77/Draw)
 [![HiEasyX](https://img.shields.io/badge/graphics-HiEasyX-orange.svg)](https://github.com/zouhuidong/HiEasyX)
